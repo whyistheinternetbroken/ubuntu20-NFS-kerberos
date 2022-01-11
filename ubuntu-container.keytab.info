@@ -1,0 +1,28 @@
+**This is not an actual keytab file, but info on the file.**
+
+For AD KDCs, you can create keytabs via `realm join` or `net ads` commands or by manual creation of keytabs using `ktpass` in Windows or `msktutil` in Linux.
+
+This blog goes into more detail:
+https://whyistheinternetbroken.wordpress.com/2021/12/23/its-a-kerberos-khristmas/
+
+Some considerations:
+- `realm join` and 'net ads` are interactive commands, which aren't ideal for containers
+- `ktpass` would be run on a Windows KDC, but it can be challenging getting the keytabs to the correct locations
+- `msktutil` needs to `kinit` as a principal that has access to create keytabs (such as administrator) and can be used to create/update keytabs. This can be easily scripted from a Linux client.
+
+The end result keytab can be viewed with ktutil or klist commands (available with krb5 tools, depending on the OS used).
+
+A keytab needs to be current when building the container to ensure proper Kerberos authentication. If it is not current, you can update it and replace it.
+
+Example:
+
+# klist -kte /scripts/dockerfiles/ubuntu-container/ubuntu-container.keytab
+Keytab name: FILE:/scripts/dockerfiles/ubuntu-container/ubuntu-container.keytab
+KVNO Timestamp           Principal
+---- ------------------- ------------------------------------------------------
+   1 12/21/2021 22:33:34 UBUNTU-CONTAINER$@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
+   1 12/21/2021 22:33:34 root/ubuntu-container.ntap.local@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
+   1 12/21/2021 22:33:34 host/centos83-perf2@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
+   4 01/10/2022 16:44:55 UBUNTU-CONTAINER$@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
+   4 01/10/2022 16:44:55 root/ubuntu-container.ntap.local@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
+   4 01/10/2022 16:44:55 host/centos7@NTAP.LOCAL (aes256-cts-hmac-sha1-96)
