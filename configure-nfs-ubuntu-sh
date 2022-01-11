@@ -1,0 +1,10 @@
+# This script simply restarts some services needed for NFS mounts/LDAP queries to work when you exec the container. You may have a better way of doing this.
+#!#!/bin/sh
+sudo service dbus start
+sudo /sbin/rpcbind
+sudo service nfs-common restart
+sudo /usr/sbin/rpc.gssd
+sudo /usr/sbin/rpc.svcgssd
+sudo service sssd start
+sudo service autofs start
+sudo service sssd restart
