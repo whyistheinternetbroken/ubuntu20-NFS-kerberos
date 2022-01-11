@@ -94,6 +94,19 @@ For the most part, the containers can run standalone and won't require host chan
 - In addition, the host's NFSv4 ID domain seems to be shared with the containers. By default, if you don't set the ID domain in idmapd.conf, the DNS name is used. If that DNS name is different on the host than the containers and NFS server (even if the case is different), then the users and groups won't map properly.
 - The host doesn't seem to require RPCGSSD to run.
 
+**Considerations for running the container**
+         
+This container only works when you use --privileged during the run. 
+         
+For example:
+`$ sudo docker run --rm -it --privileged --name ubuntu-krb -d kerberos/ubuntu-krb bash`
+         
+Running in privileged mode is needed to be able to run mount commands/run autofs.
+         
+Alternately, you can provide NFS volume access using a PVC. With NetApp storage, you can leverage NetApp Trident to do that.
+         
+https://netapp-trident.readthedocs.io/en/stable-v21.07/introduction.html
+         
 **Comments?**
 
 If you have suggestions/tips/comments, feel free to email whyistheinternetbroken@gmail.com or request to merge changes to this repo.
