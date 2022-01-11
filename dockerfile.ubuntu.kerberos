@@ -1,0 +1,40 @@
+FROM ubuntu:latest
+ENV container docker
+ENV LC_ALL C
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=US/Eastern
+
+#Adds the local host's krb5.conf.d folder, as it's referenced in krb5.conf
+VOLUME /etc/krb5.conf.d
+
+# Copy the local SSSD conf file
+RUN mkdir -p /etc/sssd
+COPY sssd.conf.ntap-ldap /etc/sssd/sssd.conf
+
+# Copy the local krb files
+COPY ubuntu-container.keytab /etc/krb5.keytab
+COPY krb5.conf.ntap /etc/krb5.conf
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Update client/install packages
+RUN apt-get update && apt-get install -y sudo apt-utils
+RUN sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -y curl krb5-user nfs4-acl-tools autofs sssd* ntp *-sss packagekit
+
+# Copy the NFSv4 IDmap file
+COPY idmapd-ubuntu.conf.ntap /etc/idmapd.conf
+
+#Copy automounter files
+COPY auto.master /etc/auto.master
+COPY auto.home /etc/auto.home
+
+# Copy nfs-common
+#COPY nfs-common /etc/default/nfs-common
+
+#Copy nsswitch
+COPY nsswitch.conf /etc/nsswitch.conf
+
+# Script to start services
+COPY bashrc /root/.bashrc
+COPY configure-nfs-ubuntu.sh /usr/local/bin/configure-nfs-ubuntu.sh
+RUN chmod +x /usr/local/bin/configure-nfs-ubuntu.sh
