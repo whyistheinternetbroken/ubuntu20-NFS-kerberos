@@ -1,0 +1,32 @@
+# This is the SSSD config file I use for my domain. It may change based on your LDAP server/configs. 
+# Refer to the sssd.conf man pages for options. https://linux.die.net/man/5/sssd.conf
+# This uses an AD LDAP server to use LDAP lookups for short usernames and binds using the keytab I created for the containers. Customize based on your environment.
+
+[sssd]
+domains = NTAP.local
+config_file_version = 2
+services = nss, pam
+debug_level = 9
+
+[nss]
+filter_users = root,ldap,named,avahi,haldaemon,dbus,radiusd,news,nscd
+filter_groups = root
+[pam]
+
+[domain/NTAP.local]
+ad_domain = NTAP.local
+krb5_realm = NTAP.LOCAL
+cache_credentials = false
+id_provider = ldap
+ldap_schema = rfc2307bis
+ldap_sasl_mech = GSSAPI
+ldap_sasl_authid = UBUNTU-CONTAINER$@NTAP.LOCAL
+ldap_sasl_canonicalize = True
+krb5_store_password_if_offline = True
+ldap_user_object_class = user
+ldap_group_object_class = group
+default_shell = /bin/bash
+ldap_id_mapping = False
+use_fully_qualified_names = False
+fallback_homedir = /home/%u
+access_provider = ad
