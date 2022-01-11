@@ -1,0 +1,19 @@
+# This is the sample nsswitch.conf file. Rename to remove sample or create your own, but be sure to use the same name as what's in the dockerfile.
+# This controls the order of user/group lookups. "sss" means that it's using SSSD/LDAP for lookup. "compat" is standard LDAP lookup calls.
+
+
+passwd:         sss compat systemd files
+group:          sss compat systemd files
+shadow:         compat sss
+gshadow:        files
+
+hosts:          files dns
+networks:       files
+
+protocols:      db files
+services:       db files sss
+ethers:         db files
+rpc:            db files
+
+netgroup:       nis sss
+sudoers:        files sss
