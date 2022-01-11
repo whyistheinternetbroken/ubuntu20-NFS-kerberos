@@ -1,3 +1,4 @@
+# When using this file, rename to remove .sample from the name or create your own file
 # The following line shows an example of an NFSv4.1 mount using krb5p to an export called /home on the ONTAP NFS server "DEMO"
 # Change options based on your preferences
 *    -fstype=nfs4,minorversion=1,rw,nosuid,hard,tcp,timeo=60,sec=krb5p       demo:/home/&
