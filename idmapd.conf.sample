@@ -1,0 +1,10 @@
+# This file is located in /etc in most Linux clients. You can use the existing file on the host or you can use this one. Rename to remove .sample or create your own.
+# The domain should match the server domain with case sensitivity. The nobody user/group should exist on the system. Ubuntu nobody differs from RHEL nobody, so set the users accordingly.
+
+[General]
+Domain = NTAP.LOCAL
+
+[Mapping]
+
+Nobody-User = nobody
+Nobody-Group = nogroup
