@@ -1,0 +1,5 @@
+# The following is essentially the default setting on clients. Change file names as needed.
+/misc   auto.misc
+/net    -hosts
++dir:/etc/auto.master.d
+/home   auto.home    --timeout=50
