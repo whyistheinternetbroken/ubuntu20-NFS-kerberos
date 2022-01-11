@@ -65,12 +65,12 @@ Kerberos password for student1@NTAP.LOCAL: :
 Changing uid to student1 (1301)
 student1@f78dc9d468af:/$ klist
 Ticket cache: FILE:/tmp/krb5cc_1301.8wEE0d9y
-Default principal: student1@NTAP.LOCAL
+Default principal: student1@NTAP
 
 Valid starting     Expires            Service principal
-01/11/22 11:55:51  01/11/22 12:55:51  krbtgt/NTAP.LOCAL@NTAP.LOCAL
+01/11/22 11:55:51  01/11/22 12:55:51  krbtgt/NTAP.LOCAL@NTAP
         renew until 01/18/22 11:55:51
-01/11/22 11:55:51  01/11/22 12:55:51  nfs/demo.ntap.local@NTAP.LOCAL
+01/11/22 11:55:51  01/11/22 12:55:51  nfs/demo.ntap.local@NTAP
         renew until 01/18/22 11:55:51
 student1@f78dc9d468af:/$ cd ~
 student1@f78dc9d468af:~$ ls -la
