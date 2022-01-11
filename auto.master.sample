@@ -1,3 +1,4 @@
+# When using this file, rename to remove .sample from the name or create your own file
 # The following is essentially the default setting on clients. Change autofs file names/export paths as needed or add new lines.
 /misc   auto.misc
 /net    -hosts
