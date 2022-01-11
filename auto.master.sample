@@ -1,4 +1,4 @@
-# The following is essentially the default setting on clients. Change file names as needed.
+# The following is essentially the default setting on clients. Change autofs file names/export paths as needed or add new lines.
 /misc   auto.misc
 /net    -hosts
 +dir:/etc/auto.master.d
