@@ -18,17 +18,17 @@ The container file will leverage configuration files that you can customize for 
 
 Here is the list of files I have in my container folder:
 
--rw-r--r--. 1 root root   90 Dec 21 23:51 auto.home  << optional if you want autofs functionality; configures home directory paths
--rw-r--r--. 1 root root   91 Dec 21 23:51 auto.master << optional if you want autofs functionality; specifies auto.home
--rw-r--r--. 1 root root 3814 Dec 21 23:51 bashrc << runs the configure-nfs-ubuntu.sh script on login to container
--rwxr-xr-x. 1 root root  214 Dec 22 00:24 configure-nfs-ubuntu.sh << starts/restarts some necessary services for NFS to ensure the work on container start (there's probably better ways to do this)
--rw-r--r--. 1 root root 1181 Dec 21 23:51 dockerfile.ubuntu.ntap << dockerfile
--rw-r--r--. 1 root root   87 Dec 21 23:51 idmapd-ubuntu.conf.ntap << IDmap config file for NFSv4 configuration
--rw-r--r--. 1 root root  776 Dec 21 23:51 krb5.conf.ntap << krb5 realm info
--rw-r--r--. 1 root root  336 Dec 21 23:52 nsswitch.conf << search order for users/groups (with SSSD added)
--rw-r--r--. 1 root root   91 Dec 21 23:52 resolv.conf << DNS info; can also be controlled via docker run; in some cases, will get overwritten by the host
--rw-------. 1 root root  665 Dec 22 00:11 sssd.conf.ntap-ldap << SSSD config for LDAP; uses a Kerberos SPN for binds
--rw-------. 1 root root  279 Dec 21 23:52 ubuntu-container.keytab << pre-configured keytab file; can be shared across containers 
+`-rw-r--r--. 1 root root   90 Dec 21 23:51 auto.home`  << optional if you want autofs functionality; configures home directory paths<BR>
+`-rw-r--r--. 1 root root   91 Dec 21 23:51 auto.master` << optional if you want autofs functionality; specifies auto.home<BR>
+`-rw-r--r--. 1 root root 3814 Dec 21 23:51 bashrc` << runs the configure-nfs-ubuntu.sh script on login to container<BR>
+`-rwxr-xr-x. 1 root root  214 Dec 22 00:24 configure-nfs-ubuntu.sh` << starts/restarts some necessary services for NFS to ensure the work on container start (there's probably better ways to do this)<BR>
+`-rw-r--r--. 1 root root 1181 Dec 21 23:51 dockerfile.ubuntu.ntap` << dockerfile<BR>
+`-rw-r--r--. 1 root root   87 Dec 21 23:51 idmapd-ubuntu.conf.ntap` << IDmap config file for NFSv4 configuration<BR>
+`-rw-r--r--. 1 root root  776 Dec 21 23:51 krb5.conf.ntap` << krb5 realm info<BR>
+`-rw-r--r--. 1 root root  336 Dec 21 23:52 nsswitch.conf` << search order for users/groups (with SSSD added)<BR>
+`-rw-r--r--. 1 root root   91 Dec 21 23:52 resolv.conf` << DNS info; can also be controlled via docker run; in some cases, will get overwritten by the host<BR>
+`-rw-------. 1 root root  665 Dec 22 00:11 sssd.conf.ntap-ldap` << SSSD config for LDAP; uses a Kerberos SPN for binds<BR>
+`-rw-------. 1 root root  279 Dec 21 23:52 ubuntu-container.keytab` << pre-configured keytab file; can be shared across containers <BR>
 
 For keytab management, you can use any preferred utilities. I found some useful tools and added them to this blog post:
 
@@ -41,45 +41,49 @@ The dockerfile is located in this repository, along with sample config files.
 The container file does the following:
 
 - Uses the latest Ubuntu build
-- adds the /etc/krb5.conf.d location from the host
+- adds the `/etc/krb5.conf.d` location from the host
 - copies the config files listed above
-- Runs apt update and the following: "sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -y curl krb5-user nfs4-acl-tools autofs sssd* ntp -sss packagekit" to include the necessary tools to run the container properly
+- Runs apt update and the following: `sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -y curl krb5-user nfs4-acl-tools autofs sssd* ntp -sss packagekit` to include the necessary tools to run the container properly
 - Runs the bash script on startup
 
 **Example of working container**
 
 Once that container is started, this is what a working container would look like:
 
-$ sudo docker exec -it twosigma bash
- * system message bus already started; not starting.
-rpcbind: another rpcbind is already running. Aborting
- * Stopping NFS common utilities                                                                                                                      [ OK ]
- * Starting NFS common utilities                                                                                                                      [ OK ]
- * Starting automount...                                                                                                                              [ OK ]
-root@f78dc9d468af:/# id student1
-uid=1301(student1) gid=1101(group1) groups=1101(group1),1203(group3),48(apache-group),1210(group10),1220(sharedgroup)
-root@f78dc9d468af:/# ksu student1 -n student1
-WARNING: Your password may be exposed if you enter it here and are logged
-         in remotely using an unsecure (non-encrypted) channel.
-Kerberos password for student1@NTAP.LOCAL: :
-Changing uid to student1 (1301)
-student1@f78dc9d468af:/$ klist
-Ticket cache: FILE:/tmp/krb5cc_1301.8wEE0d9y
-Default principal: student1@NTAP
+`$ sudo docker exec -it twosigma bash`<BR>
+` system message bus already started; not starting.`<BR>
+`rpcbind: another rpcbind is already running. Aborting`<BR>
+` Stopping NFS common utilities    [ OK ]`<BR>
+` Starting NFS common utilities    [ OK ]`<BR>
+` Starting automount...            [ OK ]`<BR>
+         
+` root@f78dc9d468af:/# id student1`<BR>
+` uid=1301(student1) gid=1101(group1) groups=1101(group1),1203(group3),48(apache-group),1210(group10),1220(sharedgroup)`<BR>
 
-Valid starting     Expires            Service principal
-01/11/22 11:55:51  01/11/22 12:55:51  krbtgt/NTAP.LOCAL@NTAP
-        renew until 01/18/22 11:55:51
-01/11/22 11:55:51  01/11/22 12:55:51  nfs/demo.ntap.local@NTAP
-        renew until 01/18/22 11:55:51
-student1@f78dc9d468af:/$ cd ~
-student1@f78dc9d468af:~$ ls -la
-total 8
-drwx------ 2 root     root       4096 Jan  4  2021 .
-drwxr-xr-x 3 root     root          0 Jan 11 11:55 ..
--rwx------ 1 student1 4294967294 3728 Jan 10 17:10 .bash_history
--rwx---r-x 1 student1 4294967294    0 Nov 13  2020 student1.txt
--rwx---r-x 1 nobody   4294967294    0 Nov 13  2020 test.txt
+` root@f78dc9d468af:/# ksu student1 -n student1`<BR>
+` WARNING: Your password may be exposed if you enter it here and are logged`<BR>
+ `         in remotely using an unsecure (non-encrypted) channel.`<BR>
+` Kerberos password for student1@NTAP: :`<BR>
+` Changing uid to student1 (1301)`<BR>
+         
+` student1@f78dc9d468af:/$ klist`<BR>
+` Ticket cache: FILE:/tmp/krb5cc_1301.8wEE0d9y`<BR>
+` Default principal: student1@NTAP`<BR>
+         
+` Valid starting     Expires            Service principal`<BR>
+` 01/11/22 11:55:51  01/11/22 12:55:51  krbtgt/NTAP.LOCAL@NTAP`<BR>
+`        renew until 01/18/22 11:55:51`<BR>
+` 01/11/22 11:55:51  01/11/22 12:55:51  nfs/demo.ntap.local@NTAP`<BR>
+`         renew until 01/18/22 11:55:51`<BR>
+         
+` student1@f78dc9d468af:/$ cd ~`<BR>
+` student1@f78dc9d468af:~$ ls -la`<BR>
+` total 8`<BR>
+` drwx------ 2 root     root       4096 Jan  4  2021 .`<BR>
+` drwxr-xr-x 3 root     root          0 Jan 11 11:55 ..`<br>
+` -rwx------ 1 student1 4294967294 3728 Jan 10 17:10 .bash_history`<BR>
+` -rwx---r-x 1 student1 4294967294    0 Nov 13  2020 student1.txt`<BR>
+` -rwx---r-x 1 nobody   4294967294    0 Nov 13  2020 test.txt`<BR>
 
 **Host requirements**
 
