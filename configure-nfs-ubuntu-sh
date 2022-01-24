@@ -6,6 +6,7 @@ sudo /sbin/rpcbind
 sudo service nfs-common restart
 sudo /usr/sbin/rpc.gssd
 sudo /usr/sbin/rpc.svcgssd
+sudo /usr/sbin/rpc.idmapd
 sudo service sssd start
 sudo service autofs start
 sudo service sssd restart
