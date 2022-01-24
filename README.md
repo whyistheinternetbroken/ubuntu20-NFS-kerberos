@@ -89,7 +89,7 @@ Once that container is started, this is what a working container would look like
 For the most part, the containers can run standalone and won't require host changes. However, I've found that the containers share some of the host's kernelspace stuff.
 
 - If you don't override DNS on the container run, the containers will share the resolv.conf of the host, which can break things if they're different
-- The NFS IDmap cache will share the host's ID map by default. Thanks to a workaround provided by mikedanese, there's a way to deal with this. On the container host, go to the /etc/request-key.d/id_resolver.conf file and comment out the existing line and replace it with:
+- The NFS IDmap cache will share the host's ID map by default. Thanks to a workaround provided by mikedanese, there's a way to deal with this. On the container host, go to the `/etc/request-key.d/id_resolver.conf` file and comment out the existing line and replace it with:
 `         create	id_resolver	*	*	/usr/bin/run_in_sssd_container /usr/sbin/nfsidmap -t 600 %k %d`
 - Changes to the dockerfile, the configure-nfs.sh script and the addition of run_in_sssd_container script were made on 1/24/2022
 - In addition, the host's NFSv4 ID domain seems to be shared with the containers. By default, if you don't set the ID domain in idmapd.conf, the DNS name is used. If that DNS name is different on the host than the containers and NFS server (even if the case is different), then the users and groups won't map properly.
