@@ -8,3 +8,4 @@ sudo /usr/sbin/rpc.svcgssd
 sudo service sssd start
 sudo service autofs start
 sudo service sssd restart
+sudo chmod +x /usr/bin/run_in_sssd_container
