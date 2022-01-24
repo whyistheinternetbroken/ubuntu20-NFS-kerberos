@@ -1,0 +1,1 @@
+create	id_resolver	*	*	/usr/bin/run_in_sssd_container /usr/sbin/nfsidmap -t 600 %k %d
