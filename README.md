@@ -10,8 +10,6 @@ To use this container, you'll need:
 - a valid DNS server (usually AD includes DNS and KDC and has ability to serve LDAP)
 - network access from containers to the above
 
-_Note: container host will also need to resolve usernames and NFSv4 ID domains for NFSv4 to work properly._
-
 **Container file information**
 
 The container file will leverage configuration files that you can customize for your infrastructure, as well as a keytab file that can be shared across multiple containers or be created for each individual container if you prefer. 
@@ -27,6 +25,7 @@ Here is the list of files I have in my container folder:
 `-rw-r--r--. 1 root root  776 Dec 21 23:51 krb5.conf.ntap` << krb5 realm info<BR>
 `-rw-r--r--. 1 root root  336 Dec 21 23:52 nsswitch.conf` << search order for users/groups (with SSSD added)<BR>
 `-rw-r--r--. 1 root root   91 Dec 21 23:52 resolv.conf` << DNS info; can also be controlled via docker run; in some cases, will get overwritten by the host<BR>
+`-rw-r--r-- 1 root root  559 Jan 24 19:58 run_in_sssd_container` << This is the script to allow the container to use SSSD for nfsidmap
 `-rw-------. 1 root root  665 Dec 22 00:11 sssd.conf.ntap-ldap` << SSSD config for LDAP; uses a Kerberos SPN for binds<BR>
 `-rw-------. 1 root root  279 Dec 21 23:52 ubuntu-container.keytab` << pre-configured keytab file; can be shared across containers <BR>
 
@@ -90,7 +89,9 @@ Once that container is started, this is what a working container would look like
 For the most part, the containers can run standalone and won't require host changes. However, I've found that the containers share some of the host's kernelspace stuff.
 
 - If you don't override DNS on the container run, the containers will share the resolv.conf of the host, which can break things if they're different
-- If you use NFSv4.x, the containers seem to want to share the same nfsidmap cache. If the host can't resolve usernames properly, then the containers won't map NFSv4 names properly - even if the container can find the users. I haven't figured out a workaround for that, so either add the user and group names to the host's local passwd and group files or configure the host to use the same LDAP server as the containers.
+- The NFS IDmap cache will share the host's ID map by default. Thanks to a workaround provided by mikedanese, there's a way to deal with this. On the container host, go to the /etc/request-key.d/id_resolver.conf file and comment out the existing line and replace it with:
+`         create	id_resolver	*	*	/usr/bin/run_in_sssd_container /usr/sbin/nfsidmap -t 600 %k %d`
+- Changes to the dockerfile, the configure-nfs.sh script and the addition of run_in_sssd_container script were made on 1/24/2022
 - In addition, the host's NFSv4 ID domain seems to be shared with the containers. By default, if you don't set the ID domain in idmapd.conf, the DNS name is used. If that DNS name is different on the host than the containers and NFS server (even if the case is different), then the users and groups won't map properly.
 - The host doesn't seem to require RPCGSSD to run.
 
