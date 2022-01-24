@@ -24,6 +24,9 @@ RUN sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -
 # Copy the NFSv4 IDmap file
 COPY idmapd-ubuntu.conf.ntap /etc/idmapd.conf
 
+#COPY run_in_sssd script
+COPY run_in_sssd_container /usr/bin/run_in_sssd_container
+
 #Copy automounter files
 COPY auto.master /etc/auto.master
 COPY auto.home /etc/auto.home
