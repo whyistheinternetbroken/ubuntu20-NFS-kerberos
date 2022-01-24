@@ -13,7 +13,7 @@ set -o pipefail
 set -o errexit
 set -o nounset
 
-declare -r SSSD_PATH="/usr/bin/sssd"
+declare -r SSSD_PATH="/usr/sbin/sssd"
 
 sssd_pid=$(pgrep -nxf "${SSSD_PATH} .*") || {
   >&2 echo "Failed to find process ID for SSSD. Is '${SSSD_PATH}' the right arg0 for the SSSD process?"
