@@ -19,7 +19,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Update client/install packages
 RUN apt-get update && apt-get install -y sudo apt-utils
-RUN sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -y curl krb5-user nfs4-acl-tools autofs sssd* ntp *-sss packagekit
+RUN sudo apt-get update && sudo apt-get autoremove && sudo apt-get install -qq -y curl krb5-user nfs4-acl-tools autofs sssd* ntp *-sss packagekit cron
 
 # Copy the NFSv4 IDmap file
 COPY idmapd-ubuntu.conf.ntap /etc/idmapd.conf
@@ -36,6 +36,10 @@ COPY auto.home /etc/auto.home
 
 #Copy nsswitch
 COPY nsswitch.conf /etc/nsswitch.conf
+
+#Copy IDmap service watchdog script
+COPY idmapd.watchdog.sh /tmp/idmapd.watchdog.sh
+COPY root.crontab /var/spool/cron/crontabs/root
 
 # Script to start services
 COPY bashrc /root/.bashrc
