@@ -10,3 +10,4 @@ sudo /usr/sbin/rpc.idmapd
 sudo service sssd start
 sudo service autofs start
 sudo service sssd restart
+sudo service cron start
